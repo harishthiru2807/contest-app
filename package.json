@@ -2,8 +2,8 @@
     "name": "contest-app",
     "version": "1.0.0",
     "scripts": {
-        "build": "cd frontend && npm install && npm run build",
-        "start": "cd backend && npm install && node server.js",
-        "seed": "cd backend && node src/utils/seeder.js"
+        "build": "cd frontend && npm install && npm run build && cd ../backend && npm install",
+        "start": "node backend/server.js",
+        "seed": "node backend/src/utils/seeder.js"
     }
 }
