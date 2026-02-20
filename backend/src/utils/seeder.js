@@ -1,244 +1,53 @@
 require('dotenv').config();
-const db = require('../db');
+const { db, find, insert, remove } = require('../db');
 
 const questions = [
     // ===== SECTION 1: MCQ (15 questions, 2 marks each) =====
-    {
-        questionID: 'MCQ-01', type: 'mcq', section: 1, order: 1, marks: 2,
-        questionText: 'Which of the following is the correct syntax to declare an integer variable in C?',
-        options: ['int x;', 'integer x;', 'Int x;', 'x int;'],
-        correctAnswer: '0', testCases: []
-    },
-    {
-        questionID: 'MCQ-02', type: 'mcq', section: 1, order: 2, marks: 2,
-        questionText: 'What is the output of the following code?\nint x = 5;\nprintf("%d", x++);',
-        options: ['5', '6', '4', 'Compile Error'],
-        correctAnswer: '0', testCases: []
-    },
-    {
-        questionID: 'MCQ-03', type: 'mcq', section: 1, order: 3, marks: 2,
-        questionText: 'Which loop is guaranteed to execute at least once?',
-        options: ['for loop', 'while loop', 'do-while loop', 'None of the above'],
-        correctAnswer: '2', testCases: []
-    },
-    {
-        questionID: 'MCQ-04', type: 'mcq', section: 1, order: 4, marks: 2,
-        questionText: 'What will be the value of x after: int x = 10; x += 5; x *= 2;',
-        options: ['25', '30', '20', '15'],
-        correctAnswer: '1', testCases: []
-    },
-    {
-        questionID: 'MCQ-05', type: 'mcq', section: 1, order: 5, marks: 2,
-        questionText: 'Which function is used to find the length of a string in C?',
-        options: ['length()', 'strlen()', 'strsize()', 'sizeof()'],
-        correctAnswer: '1', testCases: []
-    },
-    {
-        questionID: 'MCQ-06', type: 'mcq', section: 1, order: 6, marks: 2,
-        questionText: 'What is the size of an int in C on a 32-bit system?',
-        options: ['1 byte', '2 bytes', '4 bytes', '8 bytes'],
-        correctAnswer: '2', testCases: []
-    },
-    {
-        questionID: 'MCQ-07', type: 'mcq', section: 1, order: 7, marks: 2,
-        questionText: 'Which of the following operators is used to access the value at a pointer\'s address?',
-        options: ['&', '*', '->', '.'],
-        correctAnswer: '1', testCases: []
-    },
-    {
-        questionID: 'MCQ-08', type: 'mcq', section: 1, order: 8, marks: 2,
-        questionText: 'What will printf("%d", 5 / 2); output in C?',
-        options: ['2.5', '2', '3', 'Compile Error'],
-        correctAnswer: '1', testCases: []
-    },
-    {
-        questionID: 'MCQ-09', type: 'mcq', section: 1, order: 9, marks: 2,
-        questionText: 'Which keyword is used to exit a loop early in C?',
-        options: ['exit', 'break', 'return', 'stop'],
-        correctAnswer: '1', testCases: []
-    },
-    {
-        questionID: 'MCQ-10', type: 'mcq', section: 1, order: 10, marks: 2,
-        questionText: 'What does the modulus operator % return?',
-        options: ['The quotient of division', 'The remainder of division', 'The product', 'The absolute value'],
-        correctAnswer: '1', testCases: []
-    },
-    {
-        questionID: 'MCQ-11', type: 'mcq', section: 1, order: 11, marks: 2,
-        questionText: 'Which of the following correctly declares a constant in C?',
-        options: ['const int x = 10;', 'constant int x = 10;', 'int const x;', '#define int x 10'],
-        correctAnswer: '0', testCases: []
-    },
-    {
-        questionID: 'MCQ-12', type: 'mcq', section: 1, order: 12, marks: 2,
-        questionText: 'What is the output of: printf("%d", !0);',
-        options: ['0', '1', '-1', 'Undefined'],
-        correctAnswer: '1', testCases: []
-    },
-    {
-        questionID: 'MCQ-13', type: 'mcq', section: 1, order: 13, marks: 2,
-        questionText: 'Which format specifier is used to print a float in C?',
-        options: ['%d', '%c', '%f', '%s'],
-        correctAnswer: '2', testCases: []
-    },
-    {
-        questionID: 'MCQ-14', type: 'mcq', section: 1, order: 14, marks: 2,
-        questionText: 'How do you correctly allocate memory for 10 integers using malloc?',
-        options: ['malloc(10);', 'malloc(10 * sizeof(int));', 'malloc(int, 10);', 'new int[10];'],
-        correctAnswer: '1', testCases: []
-    },
-    {
-        questionID: 'MCQ-15', type: 'mcq', section: 1, order: 15, marks: 2,
-        questionText: 'Which of the following is NOT a valid C data type?',
-        options: ['float', 'double', 'string', 'char'],
-        correctAnswer: '2', testCases: []
-    },
+    { questionID: 'MCQ-01', type: 'mcq', section: 1, order: 1, marks: 2, questionText: 'Which of the following is the correct syntax to declare an integer variable in C?', options: ['int x;', 'integer x;', 'Int x;', 'x int;'], correctAnswer: '0', testCases: [] },
+    { questionID: 'MCQ-02', type: 'mcq', section: 1, order: 2, marks: 2, questionText: 'What is the output of the following code?\nint x = 5;\nprintf("%d", x++);', options: ['5', '6', '4', 'Compile Error'], correctAnswer: '0', testCases: [] },
+    { questionID: 'MCQ-03', type: 'mcq', section: 1, order: 3, marks: 2, questionText: 'Which loop is guaranteed to execute at least once?', options: ['for loop', 'while loop', 'do-while loop', 'None of the above'], correctAnswer: '2', testCases: [] },
+    { questionID: 'MCQ-04', type: 'mcq', section: 1, order: 4, marks: 2, questionText: 'What will be the value of x after: int x = 10; x += 5; x *= 2;', options: ['25', '30', '20', '15'], correctAnswer: '1', testCases: [] },
+    { questionID: 'MCQ-05', type: 'mcq', section: 1, order: 5, marks: 2, questionText: 'Which function is used to find the length of a string in C?', options: ['length()', 'strlen()', 'strsize()', 'sizeof()'], correctAnswer: '1', testCases: [] },
+    { questionID: 'MCQ-06', type: 'mcq', section: 1, order: 6, marks: 2, questionText: 'What is the size of an int in C on a 32-bit system?', options: ['1 byte', '2 bytes', '4 bytes', '8 bytes'], correctAnswer: '2', testCases: [] },
+    { questionID: 'MCQ-07', type: 'mcq', section: 1, order: 7, marks: 2, questionText: "Which of the following operators is used to access the value at a pointer's address?", options: ['&', '*', '->', '.'], correctAnswer: '1', testCases: [] },
+    { questionID: 'MCQ-08', type: 'mcq', section: 1, order: 8, marks: 2, questionText: 'What will printf("%d", 5 / 2); output in C?', options: ['2.5', '2', '3', 'Compile Error'], correctAnswer: '1', testCases: [] },
+    { questionID: 'MCQ-09', type: 'mcq', section: 1, order: 9, marks: 2, questionText: 'Which keyword is used to exit a loop early in C?', options: ['exit', 'break', 'return', 'stop'], correctAnswer: '1', testCases: [] },
+    { questionID: 'MCQ-10', type: 'mcq', section: 1, order: 10, marks: 2, questionText: 'What does the modulus operator % return?', options: ['The quotient of division', 'The remainder of division', 'The product', 'The absolute value'], correctAnswer: '1', testCases: [] },
+    { questionID: 'MCQ-11', type: 'mcq', section: 1, order: 11, marks: 2, questionText: 'Which of the following correctly declares a constant in C?', options: ['const int x = 10;', 'constant int x = 10;', 'int const x;', '#define int x 10'], correctAnswer: '0', testCases: [] },
+    { questionID: 'MCQ-12', type: 'mcq', section: 1, order: 12, marks: 2, questionText: 'What is the output of: printf("%d", !0);', options: ['0', '1', '-1', 'Undefined'], correctAnswer: '1', testCases: [] },
+    { questionID: 'MCQ-13', type: 'mcq', section: 1, order: 13, marks: 2, questionText: 'Which format specifier is used to print a float in C?', options: ['%d', '%c', '%f', '%s'], correctAnswer: '2', testCases: [] },
+    { questionID: 'MCQ-14', type: 'mcq', section: 1, order: 14, marks: 2, questionText: 'How do you correctly allocate memory for 10 integers using malloc?', options: ['malloc(10);', 'malloc(10 * sizeof(int));', 'malloc(int, 10);', 'new int[10];'], correctAnswer: '1', testCases: [] },
+    { questionID: 'MCQ-15', type: 'mcq', section: 1, order: 15, marks: 2, questionText: 'Which of the following is NOT a valid C data type?', options: ['float', 'double', 'string', 'char'], correctAnswer: '2', testCases: [] },
 
     // ===== SECTION 2: Debugging (5 questions, 3 marks each) =====
-    {
-        questionID: 'DBG-01', type: 'debug', section: 2, order: 1, marks: 3,
-        questionText: 'The following C program is supposed to print numbers 1 to 5 but has a bug. Find and fix it:',
-        starterCode: `#include <stdio.h>\nint main() {\n    int i;\n    for (i = 0; i <= 5; i++) {\n        printf("%d\\n", i);\n    }\n    return 0;\n}`,
-        testCases: [{ input: '', expectedOutput: '1\n2\n3\n4\n5' }]
-    },
-    {
-        questionID: 'DBG-02', type: 'debug', section: 2, order: 2, marks: 3,
-        questionText: 'Fix the following program that should compute the sum of two numbers entered by user:',
-        starterCode: `#include <stdio.h>\nint main() {\n    int a, b, sum;\n    scanf("%d %d", a, b);\n    sum = a + b;\n    printf("Sum = %d\\n", sum);\n    return 0;\n}`,
-        testCases: [{ input: '3 7', expectedOutput: 'Sum = 10' }, { input: '10 20', expectedOutput: 'Sum = 30' }]
-    },
-    {
-        questionID: 'DBG-03', type: 'debug', section: 2, order: 3, marks: 3,
-        questionText: 'Fix the following function that should return the factorial of n:',
-        starterCode: `#include <stdio.h>\nint factorial(int n) {\n    if (n == 0) return 1;\n    return n * factorial(n - 2);\n}\nint main() {\n    int n;\n    scanf("%d", &n);\n    printf("%d\\n", factorial(n));\n    return 0;\n}`,
-        testCases: [{ input: '5', expectedOutput: '120' }, { input: '4', expectedOutput: '24' }]
-    },
-    {
-        questionID: 'DBG-04', type: 'debug', section: 2, order: 4, marks: 3,
-        questionText: 'Fix the following program that should check if a number is even or odd:',
-        starterCode: `#include <stdio.h>\nint main() {\n    int n;\n    scanf("%d", &n);\n    if (n % 2 = 0)\n        printf("Even\\n");\n    else\n        printf("Odd\\n");\n    return 0;\n}`,
-        testCases: [{ input: '4', expectedOutput: 'Even' }, { input: '7', expectedOutput: 'Odd' }]
-    },
-    {
-        questionID: 'DBG-05', type: 'debug', section: 2, order: 5, marks: 3,
-        questionText: 'Fix the following program that should reverse a string:',
-        starterCode: `#include <stdio.h>\n#include <string.h>\nint main() {\n    char str[100];\n    scanf("%s", str);\n    int n = strlen(str);\n    for (int i = 0; i < n / 2; i++) {\n        char temp = str[i];\n        str[i] = str[n - i];\n        str[n - i] = temp;\n    }\n    printf("%s\\n", str);\n    return 0;\n}`,
-        testCases: [{ input: 'hello', expectedOutput: 'olleh' }, { input: 'abcd', expectedOutput: 'dcba' }]
-    },
+    { questionID: 'DBG-01', type: 'debug', section: 2, order: 1, marks: 3, questionText: 'The following C program is supposed to print numbers 1 to 5 but has a bug. Find and fix it:', starterCode: '#include <stdio.h>\nint main() {\n    int i;\n    for (i = 0; i <= 5; i++) {\n        printf("%d\\n", i);\n    }\n    return 0;\n}', testCases: [{ input: '', expectedOutput: '1\n2\n3\n4\n5' }] },
+    { questionID: 'DBG-02', type: 'debug', section: 2, order: 2, marks: 3, questionText: 'Fix the following program that should compute the sum of two numbers entered by user:', starterCode: '#include <stdio.h>\nint main() {\n    int a, b, sum;\n    scanf("%d %d", a, b);\n    sum = a + b;\n    printf("Sum = %d\\n", sum);\n    return 0;\n}', testCases: [{ input: '3 7', expectedOutput: 'Sum = 10' }, { input: '10 20', expectedOutput: 'Sum = 30' }] },
+    { questionID: 'DBG-03', type: 'debug', section: 2, order: 3, marks: 3, questionText: 'Fix the following function that should return the factorial of n:', starterCode: '#include <stdio.h>\nint factorial(int n) {\n    if (n == 0) return 1;\n    return n * factorial(n - 2);\n}\nint main() {\n    int n;\n    scanf("%d", &n);\n    printf("%d\\n", factorial(n));\n    return 0;\n}', testCases: [{ input: '5', expectedOutput: '120' }, { input: '4', expectedOutput: '24' }] },
+    { questionID: 'DBG-04', type: 'debug', section: 2, order: 4, marks: 3, questionText: 'Fix the following program that should check if a number is even or odd:', starterCode: '#include <stdio.h>\nint main() {\n    int n;\n    scanf("%d", &n);\n    if (n % 2 = 0)\n        printf("Even\\n");\n    else\n        printf("Odd\\n");\n    return 0;\n}', testCases: [{ input: '4', expectedOutput: 'Even' }, { input: '7', expectedOutput: 'Odd' }] },
+    { questionID: 'DBG-05', type: 'debug', section: 2, order: 5, marks: 3, questionText: 'Fix the following program that should reverse a string:', starterCode: '#include <stdio.h>\n#include <string.h>\nint main() {\n    char str[100];\n    scanf("%s", str);\n    int n = strlen(str);\n    for (int i = 0; i < n / 2; i++) {\n        char temp = str[i];\n        str[i] = str[n - i];\n        str[n - i] = temp;\n    }\n    printf("%s\\n", str);\n    return 0;\n}', testCases: [{ input: 'hello', expectedOutput: 'olleh' }, { input: 'abcd', expectedOutput: 'dcba' }] },
 
     // ===== SECTION 3: Fill Missing Code (5 questions, 4 marks each) =====
-    {
-        questionID: 'FILL-01', type: 'fill', section: 3, order: 1, marks: 4,
-        questionText: 'Complete the function to find the maximum of two numbers. Fill in the blank (replace ___ with your code):',
-        starterCode: `#include <stdio.h>\nint findMax(int a, int b) {\n    ___\n}\nint main() {\n    int x, y;\n    scanf("%d %d", &x, &y);\n    printf("%d\\n", findMax(x, y));\n    return 0;\n}`,
-        testCases: [{ input: '3 7', expectedOutput: '7' }, { input: '10 2', expectedOutput: '10' }, { input: '5 5', expectedOutput: '5' }]
-    },
-    {
-        questionID: 'FILL-02', type: 'fill', section: 3, order: 2, marks: 4,
-        questionText: 'Complete the code to print the Fibonacci series up to n terms. Fill in the missing logic:',
-        starterCode: `#include <stdio.h>\nint main() {\n    int n, a = 0, b = 1, c;\n    scanf("%d", &n);\n    for (int i = 0; i < n; i++) {\n        printf("%d ", a);\n        ___\n    }\n    return 0;\n}`,
-        testCases: [{ input: '5', expectedOutput: '0 1 1 2 3' }, { input: '7', expectedOutput: '0 1 1 2 3 5 8' }]
-    },
-    {
-        questionID: 'FILL-03', type: 'fill', section: 3, order: 3, marks: 4,
-        questionText: 'Complete the program to find the sum of all elements in an array of n elements:',
-        starterCode: `#include <stdio.h>\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n], sum = 0;\n    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);\n    ___\n    printf("%d\\n", sum);\n    return 0;\n}`,
-        testCases: [{ input: '5\n1 2 3 4 5', expectedOutput: '15' }, { input: '3\n10 20 30', expectedOutput: '60' }]
-    },
-    {
-        questionID: 'FILL-04', type: 'fill', section: 3, order: 4, marks: 4,
-        questionText: 'Complete the function to count the number of vowels in a string:',
-        starterCode: `#include <stdio.h>\n#include <string.h>\n#include <ctype.h>\nint countVowels(char str[]) {\n    int count = 0;\n    for (int i = 0; i < strlen(str); i++) {\n        char c = tolower(str[i]);\n        ___\n    }\n    return count;\n}\nint main() {\n    char s[100];\n    scanf("%s", s);\n    printf("%d\\n", countVowels(s));\n    return 0;\n}`,
-        testCases: [{ input: 'hello', expectedOutput: '2' }, { input: 'programming', expectedOutput: '3' }]
-    },
-    {
-        questionID: 'FILL-05', type: 'fill', section: 3, order: 5, marks: 4,
-        questionText: 'Complete the bubble sort implementation to sort n numbers in ascending order:',
-        starterCode: `#include <stdio.h>\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n];\n    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);\n    for (int i = 0; i < n - 1; i++) {\n        for (int j = 0; j < n - i - 1; j++) {\n            ___\n        }\n    }\n    for (int i = 0; i < n; i++) printf("%d ", arr[i]);\n    return 0;\n}`,
-        testCases: [{ input: '5\n3 1 4 1 5', expectedOutput: '1 1 3 4 5' }, { input: '4\n9 2 6 1', expectedOutput: '1 2 6 9' }]
-    },
+    { questionID: 'FILL-01', type: 'fill', section: 3, order: 1, marks: 4, questionText: 'Complete the function to find the maximum of two numbers. Fill in the blank (replace ___ with your code):', starterCode: '#include <stdio.h>\nint findMax(int a, int b) {\n    ___\n}\nint main() {\n    int x, y;\n    scanf("%d %d", &x, &y);\n    printf("%d\\n", findMax(x, y));\n    return 0;\n}', testCases: [{ input: '3 7', expectedOutput: '7' }, { input: '10 2', expectedOutput: '10' }, { input: '5 5', expectedOutput: '5' }] },
+    { questionID: 'FILL-02', type: 'fill', section: 3, order: 2, marks: 4, questionText: 'Complete the code to print the Fibonacci series up to n terms. Fill in the missing logic:', starterCode: '#include <stdio.h>\nint main() {\n    int n, a = 0, b = 1, c;\n    scanf("%d", &n);\n    for (int i = 0; i < n; i++) {\n        printf("%d ", a);\n        ___\n    }\n    return 0;\n}', testCases: [{ input: '5', expectedOutput: '0 1 1 2 3' }, { input: '7', expectedOutput: '0 1 1 2 3 5 8' }] },
+    { questionID: 'FILL-03', type: 'fill', section: 3, order: 3, marks: 4, questionText: 'Complete the program to find the sum of all elements in an array of n elements:', starterCode: '#include <stdio.h>\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n], sum = 0;\n    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);\n    ___\n    printf("%d\\n", sum);\n    return 0;\n}', testCases: [{ input: '5\n1 2 3 4 5', expectedOutput: '15' }, { input: '3\n10 20 30', expectedOutput: '60' }] },
+    { questionID: 'FILL-04', type: 'fill', section: 3, order: 4, marks: 4, questionText: 'Complete the function to count the number of vowels in a string:', starterCode: '#include <stdio.h>\n#include <string.h>\n#include <ctype.h>\nint countVowels(char str[]) {\n    int count = 0;\n    for (int i = 0; i < strlen(str); i++) {\n        char c = tolower(str[i]);\n        ___\n    }\n    return count;\n}\nint main() {\n    char s[100];\n    scanf("%s", s);\n    printf("%d\\n", countVowels(s));\n    return 0;\n}', testCases: [{ input: 'hello', expectedOutput: '2' }, { input: 'programming', expectedOutput: '3' }] },
+    { questionID: 'FILL-05', type: 'fill', section: 3, order: 5, marks: 4, questionText: 'Complete the bubble sort implementation to sort n numbers in ascending order:', starterCode: '#include <stdio.h>\nint main() {\n    int n;\n    scanf("%d", &n);\n    int arr[n];\n    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);\n    for (int i = 0; i < n - 1; i++) {\n        for (int j = 0; j < n - i - 1; j++) {\n            ___\n        }\n    }\n    for (int i = 0; i < n; i++) printf("%d ", arr[i]);\n    return 0;\n}', testCases: [{ input: '5\n3 1 4 1 5', expectedOutput: '1 1 3 4 5' }, { input: '4\n9 2 6 1', expectedOutput: '1 2 6 9' }] },
 
-    // ===== SECTION 4: Coding Questions (5 questions, 5 marks each) =====
-    {
-        questionID: 'CODE-01', type: 'coding', section: 4, order: 1, marks: 5,
-        questionText: `Write a C program that reads an integer n and prints all prime numbers from 2 to n (one per line).\n\nInput: A single integer n (2 <= n <= 1000)\nOutput: All prime numbers from 2 to n, each on a new line.\n\nExample:\nInput: 10\nOutput:\n2\n3\n5\n7`,
-        starterCode: '',
-        testCases: [
-            { input: '10', expectedOutput: '2\n3\n5\n7' },
-            { input: '20', expectedOutput: '2\n3\n5\n7\n11\n13\n17\n19' },
-            { input: '2', expectedOutput: '2' }
-        ]
-    },
-    {
-        questionID: 'CODE-02', type: 'coding', section: 4, order: 2, marks: 5,
-        questionText: `Write a C program to check if a given string is a palindrome.\n\nInput: A single string (no spaces, max 100 chars)\nOutput: Print "Yes" if palindrome, "No" otherwise.\n\nExample:\nInput: racecar\nOutput: Yes`,
-        starterCode: '',
-        testCases: [
-            { input: 'racecar', expectedOutput: 'Yes' }, { input: 'hello', expectedOutput: 'No' },
-            { input: 'madam', expectedOutput: 'Yes' }, { input: 'abcba', expectedOutput: 'Yes' }
-        ]
-    },
-    {
-        questionID: 'CODE-03', type: 'coding', section: 4, order: 3, marks: 5,
-        questionText: `Write a C program to find the GCD of two numbers using Euclidean algorithm.\n\nInput: Two integers a and b\nOutput: GCD of a and b\n\nExample:\nInput: 48 18\nOutput: 6`,
-        starterCode: '',
-        testCases: [
-            { input: '48 18', expectedOutput: '6' }, { input: '100 75', expectedOutput: '25' },
-            { input: '7 3', expectedOutput: '1' }, { input: '36 24', expectedOutput: '12' }
-        ]
-    },
-    {
-        questionID: 'CODE-04', type: 'coding', section: 4, order: 4, marks: 5,
-        questionText: `Write a C program that reads n integers and finds the second largest element.\n\nInput: First line: n. Second line: n integers.\nOutput: The second largest distinct element.\n\nExample:\nInput:\n5\n3 1 4 1 5\nOutput: 4`,
-        starterCode: '',
-        testCases: [
-            { input: '5\n3 1 4 1 5', expectedOutput: '4' }, { input: '4\n10 20 30 40', expectedOutput: '30' },
-            { input: '6\n1 2 3 4 5 6', expectedOutput: '5' }
-        ]
-    },
-    {
-        questionID: 'CODE-05', type: 'coding', section: 4, order: 5, marks: 5,
-        questionText: `Write a C function to count the frequency of each character in a string and print them in alphabetical order (only characters that appear at least once).\n\nInput: A single string (lowercase letters only)\nOutput: Each character and its frequency, sorted alphabetically.\n\nExample:\nInput: hello\nOutput:\ne:1\nh:1\nl:2\no:1`,
-        starterCode: '',
-        testCases: [
-            { input: 'hello', expectedOutput: 'e:1\nh:1\nl:2\no:1' },
-            { input: 'aabbc', expectedOutput: 'a:2\nb:2\nc:1' },
-            { input: 'abcd', expectedOutput: 'a:1\nb:1\nc:1\nd:1' }
-        ]
-    },
-    {
-        questionID: 'CODE-06', type: 'coding', section: 4, order: 6, marks: 5,
-        questionText: `Write a C program to implement a stack using an array that supports push, pop, and display operations.\n\nInput:\nFirst line: number of operations n\nEach subsequent line: either "push X" (push integer X) or "pop" (pop and print top, or print "Empty" if stack is empty)\n\nExample:\nInput:\n4\npush 10\npush 20\npop\npop\nOutput:\n20\n10`,
-        starterCode: '',
-        testCases: [
-            { input: '4\npush 10\npush 20\npop\npop', expectedOutput: '20\n10' },
-            { input: '3\npush 5\npop\npop', expectedOutput: '5\nEmpty' },
-            { input: '3\npush 1\npush 2\npush 3', expectedOutput: '' }
-        ]
-    },
-    {
-        questionID: 'CODE-07', type: 'coding', section: 4, order: 7, marks: 5,
-        questionText: `Write a C program that checks if parentheses in a given string are balanced. Only consider '(' and ')'.\n\nInput: A single string (max 100 characters)\nOutput: "Balanced" if parentheses are balanced, "Unbalanced" otherwise.\n\nExample:\nInput: (a+b)*(c-d)\nOutput: Balanced\n\nInput: ((x+y)\nOutput: Unbalanced`,
-        starterCode: '',
-        testCases: [
-            { input: '(a+b)*(c-d)', expectedOutput: 'Balanced' },
-            { input: '((x+y)', expectedOutput: 'Unbalanced' },
-            { input: '((()))', expectedOutput: 'Balanced' },
-            { input: ')(', expectedOutput: 'Unbalanced' }
-        ]
-    }
+    // ===== SECTION 4: Coding Questions (7 questions, 5 marks each) =====
+    { questionID: 'CODE-01', type: 'coding', section: 4, order: 1, marks: 5, questionText: 'Write a C program that reads an integer n and prints all prime numbers from 2 to n (one per line).\n\nInput: A single integer n (2 <= n <= 1000)\nOutput: All prime numbers from 2 to n, each on a new line.\n\nExample:\nInput: 10\nOutput:\n2\n3\n5\n7', starterCode: '', testCases: [{ input: '10', expectedOutput: '2\n3\n5\n7' }, { input: '20', expectedOutput: '2\n3\n5\n7\n11\n13\n17\n19' }, { input: '2', expectedOutput: '2' }] },
+    { questionID: 'CODE-02', type: 'coding', section: 4, order: 2, marks: 5, questionText: 'Write a C program to check if a given string is a palindrome.\n\nInput: A single string (no spaces, max 100 chars)\nOutput: Print "Yes" if palindrome, "No" otherwise.\n\nExample:\nInput: racecar\nOutput: Yes', starterCode: '', testCases: [{ input: 'racecar', expectedOutput: 'Yes' }, { input: 'hello', expectedOutput: 'No' }, { input: 'madam', expectedOutput: 'Yes' }] },
+    { questionID: 'CODE-03', type: 'coding', section: 4, order: 3, marks: 5, questionText: 'Write a C program to find the GCD of two numbers using Euclidean algorithm.\n\nInput: Two integers a and b\nOutput: GCD of a and b\n\nExample:\nInput: 48 18\nOutput: 6', starterCode: '', testCases: [{ input: '48 18', expectedOutput: '6' }, { input: '100 75', expectedOutput: '25' }, { input: '7 3', expectedOutput: '1' }] },
+    { questionID: 'CODE-04', type: 'coding', section: 4, order: 4, marks: 5, questionText: 'Write a C program that reads n integers and finds the second largest element.\n\nInput: First line: n. Second line: n integers.\nOutput: The second largest distinct element.\n\nExample:\nInput:\n5\n3 1 4 1 5\nOutput: 4', starterCode: '', testCases: [{ input: '5\n3 1 4 1 5', expectedOutput: '4' }, { input: '4\n10 20 30 40', expectedOutput: '30' }] },
+    { questionID: 'CODE-05', type: 'coding', section: 4, order: 5, marks: 5, questionText: 'Write a C function to count the frequency of each character in a string and print them in alphabetical order (only characters that appear at least once).\n\nInput: A single string (lowercase letters only)\nOutput: Each character and its frequency, sorted alphabetically.\n\nExample:\nInput: hello\nOutput:\ne:1\nh:1\nl:2\no:1', starterCode: '', testCases: [{ input: 'hello', expectedOutput: 'e:1\nh:1\nl:2\no:1' }, { input: 'aabbc', expectedOutput: 'a:2\nb:2\nc:1' }] },
+    { questionID: 'CODE-06', type: 'coding', section: 4, order: 6, marks: 5, questionText: 'Write a C program to implement a stack using an array that supports push, pop, and display operations.\n\nInput:\nFirst line: number of operations n\nEach subsequent line: either "push X" or "pop"\n\nExample:\nInput:\n4\npush 10\npush 20\npop\npop\nOutput:\n20\n10', starterCode: '', testCases: [{ input: '4\npush 10\npush 20\npop\npop', expectedOutput: '20\n10' }, { input: '3\npush 5\npop\npop', expectedOutput: '5\nEmpty' }] },
+    { questionID: 'CODE-07', type: 'coding', section: 4, order: 7, marks: 5, questionText: "Write a C program that checks if parentheses in a given string are balanced. Only consider '(' and ')'.\n\nInput: A single string (max 100 characters)\nOutput: \"Balanced\" if balanced, \"Unbalanced\" otherwise.\n\nExample:\nInput: (a+b)*(c-d)\nOutput: Balanced", starterCode: '', testCases: [{ input: '(a+b)*(c-d)', expectedOutput: 'Balanced' }, { input: '((x+y)', expectedOutput: 'Unbalanced' }, { input: '((()))', expectedOutput: 'Balanced' }] }
 ];
 
-try {
-    const Question = require('../models/Question');
-    async function seed() {
-        await Question.deleteMany();
-        await Question.insertMany(questions);
-        console.log(`✅ ${questions.length} questions seeded into SQLite successfully`);
-        process.exit(0);
-    }
-    seed().catch(err => { console.error('Seeding error:', err); process.exit(1); });
-} catch (err) {
-    console.error('Seed error:', err);
-    process.exit(1);
+async function seed() {
+    await remove('questions', {}, { multi: true });
+    await insert('questions', questions);
+    console.log(`✅ ${questions.length} questions seeded into NeDB successfully`);
+    process.exit(0);
 }
+
+seed().catch(err => { console.error('Seeding error:', err); process.exit(1); });
