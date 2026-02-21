@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: contest-app
+    runtime: node
+    rootDir: backend
+    buildCommand: cd ../frontend && npm install && npm run build && cd ../backend && npm install
+    startCommand: node src/utils/seeder.js && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: harishcode@admin.com
+      - key: ADMIN_PASSWORD
+        value: "123456789"
