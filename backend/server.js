@@ -4,9 +4,24 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+
+// 1. MUST BE FIRST: Load Env and Validate
 require('dotenv').config();
 
-// Initialize SQLite (creates tables and default settings)
+const requiredEnv = ['JWT_SECRET', 'ADMIN_JWT_SECRET', 'ADMIN_EMAIL', 'ADMIN_PASSWORD'];
+const missingEnv = requiredEnv.filter(k => !process.env[k] || process.env[k].trim() === '');
+
+if (missingEnv.length > 0) {
+  console.error('\n❌ CRITICAL ERROR: Missing or empty environment variables:', missingEnv.join(', '));
+  console.error('Check your Render/Railway dashboard or .env file.');
+  // In production, we must stop if secrets are missing to prevent auth bypass/errors
+  if (process.env.NODE_ENV === 'production') {
+    console.error('Stopping server to prevent runtime errors.');
+    process.exit(1);
+  }
+}
+
+// 2. Initialize Database (NeDB)
 require('./src/db');
 
 const authRoutes = require('./src/routes/auth');
@@ -15,17 +30,8 @@ const adminRoutes = require('./src/routes/admin');
 const codeRoutes = require('./src/routes/code');
 
 const app = express();
-app.set('trust proxy', 1); // Trust Render proxy for req.ip
+app.set('trust proxy', 1);
 const server = http.createServer(app);
-
-// Startup check for essential environment variables
-const requiredEnv = ['JWT_SECRET', 'ADMIN_JWT_SECRET', 'ADMIN_EMAIL', 'ADMIN_PASSWORD'];
-const missingEnv = requiredEnv.filter(k => !process.env[k]);
-if (missingEnv.length > 0) {
-  console.error('\n❌ CRITICAL ERROR: Missing environment variables:', missingEnv.join(', '));
-  console.error('Please set these in your Render/Railway dashboard or .env file.\n');
-  if (process.env.NODE_ENV === 'production') process.exit(1);
-}
 
 const allowedOrigins = process.env.FRONTEND_URL
   ? [process.env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:3000']
