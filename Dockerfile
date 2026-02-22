@@ -27,4 +27,5 @@ EXPOSE 5000
 
 # Seed the DB then start the server
 WORKDIR /app/backend
-CMD node src/utils/seeder.js && node server.js
+RUN gcc --version # Verify gcc is installed during build
+CMD ["sh", "-c", "node src/utils/seeder.js && node server.js"]

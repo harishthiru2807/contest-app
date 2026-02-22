@@ -12,7 +12,7 @@ async function runCCode(code, input = '') {
     const id = uuidv4();
     const tmpDir = os.tmpdir();
     const srcFile = path.join(tmpDir, `prog_${id}.c`);
-    const exeFile = path.join(tmpDir, `prog_${id}.exe`);
+    const exeFile = path.join(tmpDir, `prog_${id}`); // Removed .exe for Linux
 
     try {
         fs.writeFileSync(srcFile, code, 'utf8');
@@ -20,17 +20,24 @@ async function runCCode(code, input = '') {
         // Compile
         await new Promise((resolve, reject) => {
             exec(`gcc "${srcFile}" -o "${exeFile}" -lm`, { timeout: COMPILE_TIMEOUT }, (err, stdout, stderr) => {
-                if (err) reject({ type: 'compile', message: stderr || err.message });
-                else resolve();
+                if (err) {
+                    console.error('Compilation Error:', stderr || err.message);
+                    reject({ type: 'compile', message: stderr || err.message });
+                } else resolve();
             });
         });
 
         // Run
         const output = await new Promise((resolve, reject) => {
+            // Use explicit path for Linux execution
             const proc = exec(`"${exeFile}"`, { timeout: RUN_TIMEOUT }, (err, stdout, stderr) => {
-                if (err && err.killed) reject({ type: 'timeout', message: 'Execution timed out (5s limit)' });
-                else if (err && !stdout) reject({ type: 'runtime', message: stderr || err.message });
-                else resolve((stdout || '').slice(0, MAX_OUTPUT_SIZE));
+                if (err) {
+                    if (err.killed) reject({ type: 'timeout', message: 'Execution timed out (5s limit)' });
+                    else {
+                        console.error('Runtime Error:', stderr || err.message);
+                        reject({ type: 'runtime', message: stderr || err.message });
+                    }
+                } else resolve((stdout || '').slice(0, MAX_OUTPUT_SIZE));
             });
 
             if (input) {

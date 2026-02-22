@@ -63,7 +63,21 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/code', codeRoutes);
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', time: new Date().toISOString(), db: 'SQLite' });
+  const { execSync } = require('child_process');
+  let gccStatus = 'not found';
+  try {
+    const version = execSync('gcc --version').toString().split('\n')[0];
+    gccStatus = `available (${version})`;
+  } catch (e) {
+    gccStatus = 'error: ' + e.message;
+  }
+  res.json({
+    status: 'ok',
+    time: new Date().toISOString(),
+    db: 'NeDB',
+    gcc: gccStatus,
+    env: process.env.NODE_ENV
+  });
 });
 
 io.on('connection', (socket) => {
